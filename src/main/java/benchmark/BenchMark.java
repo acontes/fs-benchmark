@@ -9,10 +9,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 
 public class BenchMark {
 
@@ -27,11 +27,11 @@ public class BenchMark {
 		Options options = new Options();
 
 		// add t option
-		options.addOption("t", false, "number of concurrent batchs to run");
-		options.addOption("b", false, "number of batchs to run");
-		options.addOption("f", false, "number of files to create/rename/delete by batch");
+		options.addOption("t", true, "number of concurrent batchs to run");
+		options.addOption("b", true, "number of batchs to run");
+		options.addOption("f", true, "number of files to create/rename/delete by batch");
 		
-		CommandLineParser parser = new PosixParser();
+		CommandLineParser parser = new GnuParser();
 		CommandLine cmd = parser.parse( options, args);
 		
 		if (args.length == 0) {
@@ -60,10 +60,11 @@ public class BenchMark {
 		
 		
 		for (int i = 0; i< batchs; i++) {
-			OneBatch batch = new OneBatch.BatchBuilder().iteration(filesPerBatch).rootDir("/tmp/toto").build();			
+			OneBatch batch = new OneBatch.BatchBuilder().iteration(filesPerBatch).rootDir("/tmp/toto"+batchs).build();			
 			results.add(executor.submit(batch));
 		}
 				
+		
 		while (! executor.awaitTermination(10, TimeUnit.SECONDS)) {};
 		
 		
