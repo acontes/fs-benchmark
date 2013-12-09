@@ -1,6 +1,5 @@
 package benchmark;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.concurrent.Callable;
@@ -11,9 +10,12 @@ public class OneBatch implements Callable<Stat>{
 	private String rootDir;
 	private int iteration;
 
+  private String name;
+
 	private  OneBatch(BatchBuilder bb) {
 		this.rootDir = bb.rootDir;
 		this.iteration = bb.iteration;
+    this.name = bb.name;
 	}
 	
 
@@ -21,6 +23,7 @@ public class OneBatch implements Callable<Stat>{
 	
 	public static class BatchBuilder {
 		
+    private String name;
 		private String rootDir;
 		private int iteration;
 
@@ -36,16 +39,23 @@ public class OneBatch implements Callable<Stat>{
 			return this;
 		}
 		
+    public BatchBuilder name(String name) {
+      this.name = name;
+      return this;
+    }
+
 		public OneBatch build() {
 			return new OneBatch(this);
 		}
 	}
 	
-	public Stat call() throws Exception {
+	@Override
+  public Stat call() throws Exception {
 
-        new File(rootDir).mkdirs();
+    System.out.println("creating dir " + rootDir);
+    new File(rootDir).mkdirs();
 
-		
+    System.out.println("starting bench " + name);
 		long start = System.currentTimeMillis();
 		
 		for(int i = 0; i < iteration; i++) {
@@ -63,7 +73,7 @@ public class OneBatch implements Callable<Stat>{
 		}
 		
 		long end = System.currentTimeMillis();
-		
+    System.out.println("end bench " + name);
 		return new Stat(iteration,end-start);
 	}
 	
